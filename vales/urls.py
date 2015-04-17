@@ -12,4 +12,6 @@ urlpatterns = patterns('',
     url(r'^signup/$', contacto_views.register, name='signup'),
     url(r'^logout/$', contacto_views.logout, name='logout'),
 
+    url(r'^contactos/$', contacto_views.get_contactos, name='get_contactos')
+
 )

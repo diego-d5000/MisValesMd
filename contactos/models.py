@@ -11,8 +11,8 @@ class Person(models.Model):
     phone_number = models.CharField(
         max_length=10, verbose_name=u'Celular', blank=True
     )
-    email = models.EmailField()
-    direccion = models.CharField(max_length=200)
+    email = models.EmailField(blank=True, null=True)
+    direccion = models.CharField(max_length=200, blank=True, null=True)
     user = models.ForeignKey(User)
 
     def __unicode__(self):
