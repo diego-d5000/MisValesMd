@@ -12,6 +12,8 @@ urlpatterns = patterns('',
     url(r'^signup/$', contacto_views.register, name='signup'),
     url(r'^logout/$', contacto_views.logout, name='logout'),
 
+
+    url(r'^persons/new/$', contacto_views.PersonView.as_view(), name='person-new'),
     url(r'^contactos/$', contacto_views.get_contactos, name='get_contactos')
 
 )

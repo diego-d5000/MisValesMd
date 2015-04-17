@@ -22,7 +22,7 @@ class Person(models.Model):
 class Group(models.Model):
     name = models.CharField(max_length=120, verbose_name=u'Nmobre')
     description = models.CharField(max_length=300, verbose_name=u'Descripcion')
-    person = models.ForeignKey(Person)
+    person = models.ManyToManyField(Person)
     user = models.ForeignKey(User)
 
     def __unicode__(self):
