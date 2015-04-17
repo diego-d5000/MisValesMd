@@ -4,6 +4,31 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 #from django.template.context_processors import csrf
 from .models import Person
+from django.views.generic import View
+from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
+from . import forms as cForms
+
+
+class PersonView(View):
+    template_name = 'person.html'
+
+    def get(self, request):
+        form = cForms.PersonForm()
+        return render(request, self.template_name, locals())
+
+    def post(self, request):
+        form = cForms.PersonForm(request.POST)
+
+        if form.is_valid():
+            form.save(user=request.user)
+            return redirect('/')
+        else:
+            return render(request, self.template_name, locals())
+
+    def dispatch(self, request, *args, **kwargs):
+        return super(PersonView, self).dispatch(request, *args, **kwargs)
+
 
 
 def home(request):
