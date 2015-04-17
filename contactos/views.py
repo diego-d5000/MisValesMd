@@ -75,10 +75,11 @@ def logout_view(request):
     logout(request)
     return redirect(reverse('login'))
 
-
+@login_required
 def get_contactos(request):
     user = request.user
-    contactos = Person.objects.filter(pk=user.pk)
+    contactos = Person.objects.filter(user=user)
+
     return render(
         request,
         'contactos.html',
