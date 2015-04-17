@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 #from django.template.context_processors import csrf
-from contactos import models as person_models
+from .models import Person
 
 
 def home(request):
@@ -31,11 +31,12 @@ def login_view(request):
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(username=username, password=password)
+        print user
         if user is not None and user.is_active:
             login(request, user)
-            return redirect(reverse('address-book'))
+            return redirect(reverse('get_contactos'))
         else:
-            print 'trono'
+            return redirect(reverse('login'))
     else:
         form = AuthenticationForm()
         return render(
@@ -48,3 +49,13 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect(reverse('login'))
+
+
+def get_contactos(request):
+    user = request.user
+    contactos = Person.objects.filter(pk=user.pk)
+    return render(
+        request,
+        'contactos.html',
+        {'contactos': contactos}
+    )
