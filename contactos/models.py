@@ -12,17 +12,16 @@ class Person(models.Model):
         max_length=10, verbose_name=u'Celular', blank=True
     )
     email = models.EmailField(blank=True, null=True)
-    direccion = models.CharField(max_length=200, blank=True, null=True)
     user = models.ForeignKey(User)
+    group = models.ManyToManyField('Group', null=True, blank=True)
 
     def __unicode__(self):
         return self.name + ' ' + self.last_name
 
 
 class Group(models.Model):
-    name = models.CharField(max_length=120, verbose_name=u'Nmobre')
+    name = models.CharField(max_length=120, verbose_name=u'Nombre')
     description = models.CharField(max_length=300, verbose_name=u'Descripcion')
-    person = models.ManyToManyField(Person)
     user = models.ForeignKey(User)
 
     def __unicode__(self):

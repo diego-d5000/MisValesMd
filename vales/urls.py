@@ -1,19 +1,20 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
-from contactos import views as contacto_views
+from contactos import views as c_views
+from django.contrib.auth.decorators import login_required
 
 urlpatterns = patterns('',
     # Examples:
-    url(r'^$', contacto_views.home, name='home'),
+    url(r'^$', c_views.home, name='home'),
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^login/$', contacto_views.login_view, name='login'),
-    url(r'^signup/$', contacto_views.register, name='signup'),
-    url(r'^logout/$', contacto_views.logout, name='logout'),
+    url(r'^login/$', c_views.LoginView.as_view(), name='login'),
+    url(r'^signup/$', c_views.RegisterView.as_view(), name='signup'),
+    url(r'^logout/$', c_views.logout, name='logout'),
 
 
-    url(r'^persons/new/$', contacto_views.PersonView.as_view(), name='person-new'),
-    url(r'^contactos/$', contacto_views.get_contactos, name='get_contactos')
+    url(r'^group/new/$', c_views.newGroup, name='group-new'),
+    url(r'^contactos/$', login_required(c_views.PersonView.as_view()), name='get_contactos')
 
 )

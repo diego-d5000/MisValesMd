@@ -3,85 +3,78 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 #from django.template.context_processors import csrf
-from .models import Person
+from .models import Person, Group
 from django.views.generic import View
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from . import forms as cForms
 
+def home(req):
+    if req.user:
+        return redirect(reverse('get_contactos'))
+    else:
+        return render(req,'index.html',{})
 
 class PersonView(View):
-    template_name = 'person.html'
 
-    def get(self, request):
-        form = cForms.PersonForm()
-        return render(request, self.template_name, locals())
+    def get(self, req):
+        user = req.user
+        group = req.GET.get('group')
+        contactos = Person.objects.filter(user=user, group=group) if group else Person.objects.filter(user=user)
+        groups = Group.objects.filter(user=user)
+        form1 = cForms.PersonForm()
+        form2 =  cForms.GroupForm()
+        return render(req,'contactos.html', locals())
 
-    def post(self, request):
-        form = cForms.PersonForm(request.POST)
+    def post(self, req):
+        form = cForms.PersonForm(req.POST)
+        print "RQ", req.POST
 
         if form.is_valid():
-            form.save(user=request.user)
-            return redirect('/')
+            form.save(user=req.user)
+            print 'bien'
+            return HttpResponse('Se ha guardado el contacto')
         else:
-            return render(request, self.template_name, locals())
+            print 'bien'
+            return HttpResponse('Hubo un error, intente mas tarde')
 
-    def dispatch(self, request, *args, **kwargs):
-        return super(PersonView, self).dispatch(request, *args, **kwargs)
+def newGroup(req):
+    form = cForms.GroupForm(req.POST)
+
+    if form.is_valid():
+        form.save(user=req.user)
+        return HttpResponse("Se ha guardado el grupo")
+    else:
+        return HttpResponse("Hubo un error, intente mas tarde")
 
 
+class RegisterView(View):
+    def get(self, req):
+        form = UserCreationForm()
+        return render(req, 'register.html', {'form': form})
 
-def home(request):
-    return render(
-        request,
-        'index.html',
-        {}
-    )
-
-def register(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+    def post(self, req):
+        form = UserCreationForm(req.POST)
         if form.is_valid():
             form.save()
             return redirect(reverse('login'))
-    else:
-        form = UserCreationForm()
-    return render(
-        request, 'register.html', {'form': form}
-    )
-
-
-def login_view(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(username=username, password=password)
-        print user
-        if user is not None and user.is_active:
-            login(request, user)
-            return redirect(reverse('get_contactos'))
         else:
-            return redirect(reverse('login'))
-    else:
+            return render(req, 'register.html', {'form': form})
+
+
+class LoginView(View):
+    def get(self, req):
         form = AuthenticationForm()
-        return render(
-            request,
-            'login.html',
-            {'form': form}
-        )
+        return render(req, 'login.html', {'form':form})
 
+    def post(self, req):
+        username = req.POST['username']
+        password = req.POST['password']
+        user = authenticate(username=username, password=password)
+        if user is not None and user.is_active:
+            login(req, user)
+            return redirect(reverse('get_contactos'))
 
-def logout_view(request):
-    logout(request)
-    return redirect(reverse('login'))
-
-@login_required
-def get_contactos(request):
-    user = request.user
-    contactos = Person.objects.filter(user=user)
-
-    return render(
-        request,
-        'contactos.html',
-        {'contactos': contactos}
-    )
+def logout_view(req):
+    logout(req)
+    return redirect(reverse('home'))

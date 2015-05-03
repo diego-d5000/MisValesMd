@@ -1,11 +1,15 @@
 {% extends 'base.html' %}
 
 {% block content %}
-	<div class="container">
-		{% for contacto in contactos %}
-			<p>{{ contacto.name }}</p>
-			<p>{{ contacto.phone_number }}</p>
-			<p>{{ contacto.email }}</p>
-		{% endfor %}
-	</div>
+	
+{% for contacto in contactos %}
+	<post-card> 
+		<h2>{{ contacto.name }} {{ contacto.last_name }}</h2>
+		<p>Tel: {{ contacto.number }}</p> 
+		<p>Cel: {{ contacto.phone_number }}</p>
+		<p>Email: {{ contacto.email }}</p>
+	</post-card>
+{% endfor %}
+
+
 {% endblock %}
